@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>출석 현황</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+    </style>
+    <script>
+        // 학생 출석 정보 데이터베이스 (9명의 학생 및 1-8회차 정보 포함)
+        const studentsData = {
+            '30503': {
+                id: '30503',
+                name: '강필립',
+                attendance: [
+                    { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '결석', 결석유형: '인정결석', 사유: '병원 내원', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '결석', 결석유형: '학원', 사유: '-', 날짜: '2024. 09. 05' }
+                ],
+                absenceCount: 2,
+                presentCount: 6
+            },
+            '30906': {
+                id: '30906',
+                name: '김준서',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 0,
+                presentCount: 8
+            },
+            '30522': {
+                id: '30522',
+                name: '최대공',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 0,
+                presentCount: 8
+            },
+            '31406': {
+                id: '31406',
+                name: '류건우',
+                attendance: [
+                    { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 01' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 02' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 03' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 04' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 05' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 06' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 0,
+                presentCount: 8
+            },
+            '30903': {
+                id: '30903',
+                name: '김도윤',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '결석', 결석유형: '미인정', 사유: '학원 등원으로 인한 결석', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '결석', 결석유형: '질병', 사유: '코로나 확진', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 2,
+                presentCount: 6
+            },
+            '30916': {
+                id: '30916',
+                name: '우정빈',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '결석', 결석유형: '인정', 사유: '수행평가 응시', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 1,
+                presentCount: 7
+            },
+            '30320': {
+                id: '30320',
+                name: '이현민',
+                attendance: [
+                { 회차: '1회차', 출석: '결석', 결석유형: '미인정', 사유: '일정 착오', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 1,
+                presentCount: 7
+            },
+            '30212': {
+                id: '30212',
+                name: '심희섭',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 0,
+                presentCount: 8
+            },
+            '30811': {
+                id: '30811',
+                name: '양주영',
+                attendance: [
+                { 회차: '1회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 08' },
+                    { 회차: '2회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 22' },
+                    { 회차: '3회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 05. 29' },
+                    { 회차: '4회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 07. 17' },
+                    { 회차: '5회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 07' },
+                    { 회차: '6회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 14' },
+                    { 회차: '7회차', 출석: '출석', 결석유형: '-', 사유: '-', 날짜: '2024. 08. 21' },
+                    { 회차: '8회차', 출석: '결석', 결석유형: '미인정', 사유: '일정 착오', 날짜: '2024. 09. 05'}
+                ],
+                absenceCount: 1,
+                presentCount: 7
+            }
+        };
+
+        function loadStudentData() {
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('student');
+
+            const student = studentsData[studentId];
+            if (!student) {
+                alert('학생 정보를 불러오지 못했습니다.');
+                return;
+            }
+
+            document.getElementById('student-id').innerText = student.id;
+            document.getElementById('student-name').innerText = student.name;
+
+            if (student.absenceCount >= 2) {
+                document.getElementById('warning-message').classList.remove('hidden');
+            }
+
+            document.getElementById('present-count').innerText = `${student.presentCount}일`;
+            document.getElementById('absence-count').innerText = `${student.absenceCount}일`;
+
+            const attendanceTable = document.getElementById('attendance-table');
+            student.attendance.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item.회차}</td>
+                                 <td><span class="${item.출석 === '출석' ? 'text-green-500' : 'text-red-500'}">${item.출석}</span></td>
+                                 <td>${item.결석유형}</td>
+                                 <td>${item.사유}</td>
+                                 <td>${item.날짜}</td>`;
+                attendanceTable.appendChild(row);
+            });
+        }
+
+        window.onload = loadStudentData;
+    </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-xl font-bold">코딩 프로젝트 탐구반</h1>
+            <a href="real2.html" class="text-blue-500">로그아웃</a>
+            
+        </div>
+        <div class="mb-4">
+            <p class="text-gray-700"><span class="font-bold">학번:</span> <span id="student-id"></span> <span class="font-bold">이름:</span> <span id="student-name"></span></p>
+            <p class="text-gray-700" id="current-date"></p>
+
+            <script>
+                // 현재 날짜를 가져와서 형식에 맞게 표시하는 함수
+                function formatDate() {
+                    const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = (today.getMonth() + 1).toString().padStart(2, '0'); // 월은 0부터 시작하므로 +1
+                    const day = today.getDate().toString().padStart(2, '0');
+                    const dayOfWeek = daysOfWeek[today.getDay()];
+                    return `${year}. ${month}. ${day}(${dayOfWeek}) 기준 출석 현황입니다.`;
+                }
+            
+                // HTML의 p 태그에 날짜 삽입
+                document.getElementById('current-date').innerText = formatDate();
+            </script>
+                    </div>
+
+        <!-- 경고 메시지 (기본적으로 숨김 처리) -->
+        <div id="warning-message" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 hidden">
+            <p><span class="font-bold">경고 ⚠️</span> 현재 누적 결석 2회로, 한번 더 결석 시 생활기록부 기재가 불가할 수 있습니다.</p>
+        </div>
+
+        <!-- 출석일수 및 결석일수 요약 박스 -->
+        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+            <div class="flex justify-center space-x-4">
+                <p class="text-gray-700"><span class="font-bold">현재 출석일수:</span> <span id="present-count"></span></p>
+                <p class="text-gray-700"><span class="font-bold">현재 결석횟수:</span> <span id="absence-count"></span></p>
+            </div>
+        </div>
+
+        <!-- 출석 현황 표 -->
+        <div class="overflow-x-auto">
+            <table>
+                <thead>
+                    <tr><!-- 인쇄 버튼 -->
+
+                        
+                        <th>회차</th>
+                        <th>출석 여부</th>
+                        <th>결석 유형</th>
+                        <th>사유</th>
+                        <th>날짜</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-table">
+                    <!-- 출석 현황이 여기에 추가됩니다 -->
+                     
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
