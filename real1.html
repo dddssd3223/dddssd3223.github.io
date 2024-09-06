@@ -197,7 +197,6 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${item.회차}</td>
                                  <td><span class="${item.출석 === '출석' ? 'text-green-500' : 'text-red-500'}">${item.출석}</span></td>
-                                 <td>${item.결석유형}</td>
                                  <td>${item.사유}</td>
                                  <td>${item.날짜}</td>`;
                 attendanceTable.appendChild(row);
@@ -257,7 +256,6 @@
                         
                         <th>회차</th>
                         <th>출석 여부</th>
-                        <th>결석 유형</th>
                         <th>사유</th>
                         <th>날짜</th>
                     </tr>
