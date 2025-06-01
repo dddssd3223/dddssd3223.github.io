@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>로그인</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,34 +12,12 @@
     }
   </style>
 
-  <!-- Firebase SDKs (CDN 방식) -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-    <h2 class="text-2xl font-bold mb-6 text-center">로그인</h2>
-    <form onsubmit="login(event)">
-      <div class="mb-4">
-        <label for="username" class="block text-gray-700">아이디 (학번)</label>
-        <input type="text" id="username" name="username" autocomplete="username"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-      </div>
-      <div class="mb-6">
-        <label for="password" class="block text-gray-700">비밀번호</label>
-        <input type="password" id="password" name="password" autocomplete="current-password"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-      </div>
-      <button type="submit"
-        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        로그인
-      </button>
-    </form>
-  </div>
+  <!-- ✅ Firebase 8.x SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-  <!-- 로그인 스크립트 -->
   <script>
-    // Firebase 설정
+    // ✅ Firebase 설정
     const firebaseConfig = {
       apiKey: "AIzaSyDZIP0NlBUUn4nrLAv-_DD_miR0nqxUeZ0",
       authDomain: "code-a982e.firebaseapp.com",
@@ -51,32 +29,65 @@
       measurementId: "G-2NV7CJ7DJW"
     };
 
-    // Firebase 초기화
+    // ✅ Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    async function login(event) {
+    // ✅ 로그인 함수
+    function login(event) {
       event.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-      try {
-        const studentRef = database.ref('s/students/' + username);
-        const snapshot = await studentRef.get();
-
-        const student = snapshot.val();
-        if (student && student.password === password) {
-          window.location.href = `real1.html?student=${username}`;
-        } else {
-          alert('아이디 또는 비밀번호가 잘못되었습니다.');
-        }
-      } catch (error) {
-        alert('로그인 중 오류가 발생했습니다.');
-        console.error(error);
+      if (!username || !password) {
+        alert('아이디와 비밀번호를 입력하세요.');
+        return;
       }
+
+      const studentRef = database.ref('s/students/' + username);
+
+      studentRef.once('value')
+        .then(snapshot => {
+          const student = snapshot.val();
+          if (student && student.password === password) {
+            // 로그인 성공 → 페이지 이동
+            window.location.href = `real1.html?student=${username}`;
+          } else {
+            alert('아이디 또는 비밀번호가 잘못되었습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('로그인 오류:', error);
+          alert('로그인 중 오류가 발생했습니다.');
+        });
     }
 
-    window.login = login; // 글로벌 함수로 등록
+    // ✅ 전역 함수로 등록
+    window.login = login;
   </script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-6 text-center">로그인</h2>
+    <form onsubmit="login(event)">
+      <div class="mb-4">
+        <label for="username" class="block text-gray-700">아이디 (학번)</label>
+        <input type="text" id="username" name="username" autocomplete="username"
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+               required>
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-gray-700">비밀번호</label>
+        <input type="password" id="password" name="password" autocomplete="current-password"
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+               required>
+      </div>
+      <button type="submit"
+              class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        로그인
+      </button>
+    </form>
+  </div>
 </body>
 </html>
